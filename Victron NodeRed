@@ -1,0 +1,563 @@
+[
+    {
+        "id": "c712439f0929c662",
+        "type": "victron-input-ess",
+        "z": "33e03f470b0de147",
+        "service": "com.victronenergy.settings",
+        "path": "/Settings/CGwacs/AcPowerSetPoint",
+        "serviceObj": {
+            "service": "com.victronenergy.settings",
+            "name": "Venus settings"
+        },
+        "pathObj": {
+            "path": "/Settings/CGwacs/AcPowerSetPoint",
+            "type": "integer",
+            "name": "Grid set-point (W)"
+        },
+        "name": "",
+        "onlyChanges": true,
+        "x": 160,
+        "y": 80,
+        "wires": [
+            [
+                "4aa09e3fb48cf9a3"
+            ]
+        ]
+    },
+    {
+        "id": "a826ca07a7e68bc1",
+        "type": "change",
+        "z": "33e03f470b0de147",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "soc",
+                "pt": "flow",
+                "to": "payload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 410,
+        "y": 40,
+        "wires": [
+            [
+                "792d040f649f0349"
+            ]
+        ]
+    },
+    {
+        "id": "4aa09e3fb48cf9a3",
+        "type": "change",
+        "z": "33e03f470b0de147",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "setpoint",
+                "pt": "flow",
+                "to": "payload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 420,
+        "y": 80,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "d2f9ff6d6b9a5001",
+        "type": "victron-input-battery",
+        "z": "33e03f470b0de147",
+        "service": "com.victronenergy.battery/512",
+        "path": "/Soc",
+        "serviceObj": {
+            "service": "com.victronenergy.battery/512",
+            "name": "Pylontech battery"
+        },
+        "pathObj": {
+            "path": "/Soc",
+            "type": "float",
+            "name": "State of charge (%)"
+        },
+        "name": "",
+        "onlyChanges": true,
+        "x": 170,
+        "y": 20,
+        "wires": [
+            [
+                "a826ca07a7e68bc1"
+            ]
+        ]
+    },
+    {
+        "id": "294271e38ccad392",
+        "type": "inject",
+        "z": "33e03f470b0de147",
+        "name": "Power Up Session Complete",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "59 13 * * *",
+        "once": false,
+        "onceDelay": "",
+        "topic": "",
+        "payload": "-50",
+        "payloadType": "num",
+        "x": 150,
+        "y": 400,
+        "wires": [
+            [
+                "48b56ccd39c59c22"
+            ]
+        ]
+    },
+    {
+        "id": "01a888034768dde2",
+        "type": "inject",
+        "z": "33e03f470b0de147",
+        "name": "Power UP Discharging",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "00 12 * * *",
+        "once": false,
+        "onceDelay": "",
+        "topic": "",
+        "payload": "-7000",
+        "payloadType": "num",
+        "x": 130,
+        "y": 260,
+        "wires": [
+            [
+                "938b9d02daadd1f9"
+            ]
+        ]
+    },
+    {
+        "id": "4e4e94858f6e74f1",
+        "type": "inject",
+        "z": "33e03f470b0de147",
+        "name": "Power UP Charging",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "00 13 * * *",
+        "once": false,
+        "onceDelay": "",
+        "topic": "",
+        "payload": "9000",
+        "payloadType": "num",
+        "x": 120,
+        "y": 320,
+        "wires": [
+            [
+                "5aa367b696b4e381"
+            ]
+        ]
+    },
+    {
+        "id": "6d037fb991d7cb2b",
+        "type": "inject",
+        "z": "33e03f470b0de147",
+        "name": "Power Up Start Session",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": "",
+        "topic": "",
+        "payload": "true",
+        "payloadType": "bool",
+        "x": 120,
+        "y": 180,
+        "wires": [
+            [
+                "dc44f139c6ad1f3a"
+            ]
+        ]
+    },
+    {
+        "id": "8a0dee25a930287b",
+        "type": "inject",
+        "z": "33e03f470b0de147",
+        "name": "Power UP Manual Stop",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": "",
+        "topic": "",
+        "payload": "false",
+        "payloadType": "bool",
+        "x": 120,
+        "y": 480,
+        "wires": [
+            [
+                "909db7ac0addf35f"
+            ]
+        ]
+    },
+    {
+        "id": "938b9d02daadd1f9",
+        "type": "function",
+        "z": "33e03f470b0de147",
+        "name": "Power UP Discharge",
+        "func": "// Get current values\nvar soc = flow.get(\"soc\");\nvar currentGridsetpoint = flow.get(\"setpoint\");\nvar currentDVCC = flow.get(\"dvcc\");\nvar manualStart = flow.get(\"manualStart\");\nvar currentTime = new Date().getHours() * 60 + new Date().getMinutes();\n\nif (manualStart) {\n    if (currentTime === 12 * 60) {\n        if (currentGridsetpoint !== -50) {\n            flow.set(\"setpoint\", -7000);\n            return [ { payload: -7000 }, { payload: -1 } ];\n        }\n        return [ { payload: -7000 }, { payload: -1 } ];\n    }\n    if (currentTime === 12 * 60 + 59) {\n        if (currentGridsetpoint !== -7000) {\n            flow.set(\"setpoint\", -50);\n            return [ { payload: -50 }, { payload: -1 } ];\n        }\n        return [ { payload: -50 }, { payload: -1 } ];\n    }\n    if (soc > 68) {\n        if (currentGridsetpoint !== -50) {\n            flow.set(\"setpoint\", -7000);\n            return [ { payload: -7000 }, { payload: -1 } ];\n        }\n        return [ { payload: -7000 }, { payload: -1 } ];\n    } else if (soc <= 65) {\n        if (currentGridsetpoint !== -7000) {\n            flow.set(\"setpoint\", -50);\n            return [ { payload: -50 }, { payload: -1 } ];\n        }\n        return [ { payload: -50 }, { payload: -1 } ];\n    }\n}\nreturn null;\n",
+        "outputs": 2,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 400,
+        "y": 200,
+        "wires": [
+            [
+                "a0c48c25da353147",
+                "78210df331ed57f2"
+            ],
+            [
+                "15f09bee0f07c92d"
+            ]
+        ]
+    },
+    {
+        "id": "5aa367b696b4e381",
+        "type": "function",
+        "z": "33e03f470b0de147",
+        "name": "Power UP Charge",
+        "func": "// Get current values\nvar soc = flow.get(\"soc\");\nvar currentGridsetpoint = flow.get(\"setpoint\");\nvar currentDVCC = flow.get(\"dvcc\");\nvar manualStart = flow.get(\"manualStart\");\nvar currentTime = new Date().getHours() * 60 + new Date().getMinutes();\n\nif (manualStart) {\n    if (currentTime === 13 * 60) {\n        if (currentGridsetpoint !== -50) {\n            flow.set(\"setpoint\", 9000);\n            return [ { payload: 9000 }, { payload: -1 } ];\n        }\n        return [ { payload: 9000 }, { payload: -1 } ];\n    }\n    if (currentTime === 13 * 60 + 58) {\n        if (currentGridsetpoint !== 9000) {\n            flow.set(\"setpoint\", -50);\n            return [ { payload: -50 }, { payload: -1 } ];\n        }\n        return [ { payload: -50 }, { payload: -1 } ];\n    }\n    if (soc > 0) {\n        if (currentGridsetpoint !== -50) {\n            flow.set(\"setpoint\", 9000);\n            return [ { payload: 9000 }, { payload: -1 } ];\n        }\n        return [ { payload: 9000 }, { payload: -1 } ];\n    } else if (soc <= 65) {\n        if (currentGridsetpoint !== 9000) {\n            flow.set(\"setpoint\", -50);\n            return [ { payload: -50 }, { payload: -1 } ];\n        }\n        return [ { payload: -50 }, { payload: -1 } ];\n    }\n}\nreturn null;\n",
+        "outputs": 2,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 390,
+        "y": 260,
+        "wires": [
+            [
+                "07e5b4720c68932f",
+                "78210df331ed57f2"
+            ],
+            [
+                "15f09bee0f07c92d"
+            ]
+        ]
+    },
+    {
+        "id": "78210df331ed57f2",
+        "type": "victron-output-ess",
+        "z": "33e03f470b0de147",
+        "service": "com.victronenergy.settings",
+        "path": "/Settings/CGwacs/AcPowerSetPoint",
+        "serviceObj": {
+            "service": "com.victronenergy.settings",
+            "name": "Venus settings"
+        },
+        "pathObj": {
+            "path": "/Settings/CGwacs/AcPowerSetPoint",
+            "type": "integer",
+            "name": "Grid set-point (W)",
+            "writable": true
+        },
+        "initial": "",
+        "name": "",
+        "onlyChanges": false,
+        "x": 780,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "15f09bee0f07c92d",
+        "type": "victron-output-settings",
+        "z": "33e03f470b0de147",
+        "service": "com.victronenergy.settings",
+        "path": "/Settings/SystemSetup/MaxChargeCurrent",
+        "serviceObj": {
+            "service": "com.victronenergy.settings",
+            "name": "Venus settings"
+        },
+        "pathObj": {
+            "path": "/Settings/SystemSetup/MaxChargeCurrent",
+            "type": "float",
+            "name": "DVCC system max charge current (A DC)",
+            "writable": true
+        },
+        "name": "",
+        "onlyChanges": false,
+        "x": 850,
+        "y": 360,
+        "wires": []
+    },
+    {
+        "id": "dc44f139c6ad1f3a",
+        "type": "function",
+        "z": "33e03f470b0de147",
+        "name": "Set Manual Start",
+        "func": "flow.set(\"manualStart\", true);\nflow.set(\"manualStop\", false);\nreturn { payload: \"Manual start activated\" };",
+        "outputs": 1,
+        "x": 390,
+        "y": 140,
+        "wires": [
+            [
+                "8c34618ef1509005"
+            ]
+        ]
+    },
+    {
+        "id": "792d040f649f0349",
+        "type": "function",
+        "z": "33e03f470b0de147",
+        "name": "SOC Monitoring",
+        "func": "var soc = msg.payload; \nvar manualStart = flow.get(\"manualStart\") || false; \nvar currentTime = new Date(); \nvar currentHour = currentTime.getHours(); \nvar currentMinute = currentTime.getMinutes(); \n\nif (manualStart) { \n    if (currentHour === 12) { \n        if (soc <= 65) { \n            node.send({ payload: -50 }); \n        } \n    } \n} \n\nreturn null;\n",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 580,
+        "y": 20,
+        "wires": [
+            [
+                "59a48d3b2c477c60"
+            ]
+        ]
+    },
+    {
+        "id": "48b56ccd39c59c22",
+        "type": "function",
+        "z": "33e03f470b0de147",
+        "name": "Power UP Session Complete",
+        "func": "\nif (flow.get(\"manualStart\") !== true) {\n    return null; \n}\n\n\nvar currentGridsetpoint = flow.get(\"setpoint\");\nvar currentDVCC = flow.get(\"dvcc\");\n\nif (currentGridsetpoint === undefined) {\n    flow.set(\"setpoint\", -50);\n}\nif (currentDVCC === undefined) {\n    flow.set(\"dvcc\", 3);\n}\n\nflow.set(\"manualStart\", false);\nflow.set(\"manualStop\", true);\n\nreturn [\n    { payload: flow.get(\"setpoint\") },\n    { payload: flow.get(\"dvcc\") },\n    { payload: \"PowerUP Session Finished Ready For Next PowerUP Event :)\" },\n    { reset: true },\n    { payload: \"Manual stop activated\" }\n];\n",
+        "outputs": 4,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 400,
+        "y": 320,
+        "wires": [
+            [
+                "78210df331ed57f2"
+            ],
+            [
+                "15f09bee0f07c92d"
+            ],
+            [
+                "d9b7e33e8df4ffc8"
+            ],
+            [
+                "8c34618ef1509005",
+                "b1bcab04ffa187c9"
+            ]
+        ]
+    },
+    {
+        "id": "909db7ac0addf35f",
+        "type": "function",
+        "z": "33e03f470b0de147",
+        "name": "Rest For Next Power UP Session",
+        "func": "if (flow.get(\"manualStart\") === true) {\n    flow.set(\"manualStart\", false);\n    \n    if (flow.get(\"setpoint\") === undefined) {\n        flow.set(\"setpoint\", -50);\n    }\n    if (flow.get(\"dvcc\") === undefined) {\n        flow.set(\"dvcc\", 3);\n    }\n\n    return [\n        { payload: flow.get(\"setpoint\") },\n        { payload: flow.get(\"dvcc\") },\n        { payload: \"Manual Stop Activated PowerUP Session Rest, Ready For Next PowerUP Event\" },\n        { reset: true },\n        { payload: \"Manual Stop Activated. Resetting values.\" },\n    ];\n} \n",
+        "outputs": 4,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 460,
+        "y": 420,
+        "wires": [
+            [
+                "78210df331ed57f2"
+            ],
+            [
+                "15f09bee0f07c92d"
+            ],
+            [
+                "ea007b3516ca10eb"
+            ],
+            [
+                "8c34618ef1509005",
+                "b1bcab04ffa187c9"
+            ]
+        ]
+    },
+    {
+        "id": "a0c48c25da353147",
+        "type": "pushover",
+        "z": "33e03f470b0de147",
+        "name": "",
+        "device": "",
+        "title": "Power Up Session Discharging",
+        "priority": "0",
+        "sound": "climb",
+        "url": "",
+        "url_title": "",
+        "html": false,
+        "x": 790,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "07e5b4720c68932f",
+        "type": "pushover",
+        "z": "33e03f470b0de147",
+        "name": "",
+        "device": "",
+        "title": "Power Up Session Charging",
+        "priority": "0",
+        "sound": "climb",
+        "url": "",
+        "url_title": "",
+        "html": false,
+        "x": 780,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "ea007b3516ca10eb",
+        "type": "pushover",
+        "z": "33e03f470b0de147",
+        "name": "",
+        "device": "",
+        "title": "Power Up Session Reset Ready For Next Session",
+        "priority": "0",
+        "sound": "climb",
+        "url": "",
+        "url_title": "",
+        "html": false,
+        "x": 850,
+        "y": 260,
+        "wires": []
+    },
+    {
+        "id": "59a48d3b2c477c60",
+        "type": "pushover",
+        "z": "33e03f470b0de147",
+        "name": "",
+        "device": "",
+        "title": "Power UP Session Stopped Discharging Due To Low SOC",
+        "priority": 0,
+        "sound": "",
+        "url": "",
+        "url_title": "",
+        "html": false,
+        "x": 940,
+        "y": 60,
+        "wires": []
+    },
+    {
+        "id": "606125b8ea556d0a",
+        "type": "pushover",
+        "z": "33e03f470b0de147",
+        "name": "",
+        "device": "",
+        "title": "Power UP Session Manually Set To RUN",
+        "priority": 0,
+        "sound": "",
+        "url": "",
+        "url_title": "",
+        "html": false,
+        "x": 880,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "b1bcab04ffa187c9",
+        "type": "delay",
+        "z": "33e03f470b0de147",
+        "name": "1min Delay",
+        "pauseType": "delay",
+        "timeout": "1",
+        "timeoutUnits": "minutes",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "hour",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 590,
+        "y": 60,
+        "wires": [
+            [
+                "606125b8ea556d0a"
+            ]
+        ]
+    },
+    {
+        "id": "8c34618ef1509005",
+        "type": "delay",
+        "z": "33e03f470b0de147",
+        "name": "One Message",
+        "pauseType": "rate",
+        "timeout": "5",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "day",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": true,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 600,
+        "y": 100,
+        "wires": [
+            [
+                "b1bcab04ffa187c9"
+            ]
+        ]
+    },
+    {
+        "id": "d9b7e33e8df4ffc8",
+        "type": "pushover",
+        "z": "33e03f470b0de147",
+        "name": "",
+        "device": "",
+        "title": "Power UP Session Finished Ready For Next Session",
+        "priority": 0,
+        "sound": "",
+        "url": "",
+        "url_title": "",
+        "html": false,
+        "x": 860,
+        "y": 220,
+        "wires": []
+    }
+]
