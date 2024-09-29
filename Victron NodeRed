@@ -1,30 +1,5 @@
 [
     {
-        "id": "c712439f0929c662",
-        "type": "victron-input-ess",
-        "z": "33e03f470b0de147",
-        "service": "com.victronenergy.settings",
-        "path": "/Settings/CGwacs/AcPowerSetPoint",
-        "serviceObj": {
-            "service": "com.victronenergy.settings",
-            "name": "Venus settings"
-        },
-        "pathObj": {
-            "path": "/Settings/CGwacs/AcPowerSetPoint",
-            "type": "integer",
-            "name": "Grid set-point (W)"
-        },
-        "name": "",
-        "onlyChanges": true,
-        "x": 160,
-        "y": 80,
-        "wires": [
-            [
-                "4aa09e3fb48cf9a3"
-            ]
-        ]
-    },
-    {
         "id": "a826ca07a7e68bc1",
         "type": "change",
         "z": "33e03f470b0de147",
@@ -70,8 +45,8 @@
         "from": "",
         "to": "",
         "reg": false,
-        "x": 420,
-        "y": 80,
+        "x": 400,
+        "y": 100,
         "wires": [
             []
         ]
@@ -98,6 +73,31 @@
         "wires": [
             [
                 "a826ca07a7e68bc1"
+            ]
+        ]
+    },
+    {
+        "id": "c712439f0929c662",
+        "type": "victron-input-ess",
+        "z": "33e03f470b0de147",
+        "service": "com.victronenergy.settings",
+        "path": "/Settings/CGwacs/AcPowerSetPoint",
+        "serviceObj": {
+            "service": "com.victronenergy.settings",
+            "name": "Venus settings"
+        },
+        "pathObj": {
+            "path": "/Settings/CGwacs/AcPowerSetPoint",
+            "type": "integer",
+            "name": "Grid set-point (W)"
+        },
+        "name": "",
+        "onlyChanges": true,
+        "x": 160,
+        "y": 80,
+        "wires": [
+            [
+                "4aa09e3fb48cf9a3"
             ]
         ]
     },
@@ -359,7 +359,7 @@
         "type": "function",
         "z": "33e03f470b0de147",
         "name": "Power UP Session Complete",
-        "func": "\nif (flow.get(\"manualStart\") !== true) {\n    return null; \n}\n\n\nvar currentGridsetpoint = flow.get(\"setpoint\");\nvar currentDVCC = flow.get(\"dvcc\");\n\nif (currentGridsetpoint === undefined) {\n    flow.set(\"setpoint\", -50);\n}\nif (currentDVCC === undefined) {\n    flow.set(\"dvcc\", 3);\n}\n\nflow.set(\"manualStart\", false);\nflow.set(\"manualStop\", true);\n\nreturn [\n    { payload: flow.get(\"setpoint\") },\n    { payload: flow.get(\"dvcc\") },\n    { payload: \"PowerUP Session Finished Ready For Next PowerUP Event :)\" },\n    { reset: true },\n    { payload: \"Manual stop activated\" }\n];\n",
+        "func": "\nif (flow.get(\"manualStart\") !== true) {\n    return null; \n}\n\n\nvar currentGridsetpoint = flow.get(\"setpoint\");\nvar currentDVCC = flow.get(\"dvcc\");\n\nif (currentGridsetpoint === undefined) {\n    flow.set(\"setpoint\", -50);\n}\nif (currentDVCC === undefined) {\n    flow.set(\"dvcc\", 3);\n}\n\nflow.set(\"manualStart\", false);\nflow.set(\"manualStop\", true);\n\nreturn [\n    { payload: \"-50\" },\n    { payload: \"3\" },\n    { payload: \"PowerUP Session Finished Ready For Next PowerUP Event :)\" },\n    { reset: true },\n    { payload: \"Manual stop activated\" }\n];\n",
         "outputs": 4,
         "timeout": 0,
         "noerr": 0,
@@ -389,7 +389,7 @@
         "type": "function",
         "z": "33e03f470b0de147",
         "name": "Rest For Next Power UP Session",
-        "func": "if (flow.get(\"manualStart\") === true) {\n    flow.set(\"manualStart\", false);\n    \n    if (flow.get(\"setpoint\") === undefined) {\n        flow.set(\"setpoint\", -50);\n    }\n    if (flow.get(\"dvcc\") === undefined) {\n        flow.set(\"dvcc\", 3);\n    }\n\n    return [\n        { payload: flow.get(\"setpoint\") },\n        { payload: flow.get(\"dvcc\") },\n        { payload: \"Manual Stop Activated PowerUP Session Rest, Ready For Next PowerUP Event\" },\n        { reset: true },\n        { payload: \"Manual Stop Activated. Resetting values.\" },\n    ];\n} \n",
+        "func": "if (flow.get(\"manualStart\") === true) {\n    flow.set(\"manualStart\", false);\n    \n    if (flow.get(\"setpoint\") === undefined) {\n        flow.set(\"setpoint\", -50);\n    }\n    if (flow.get(\"dvcc\") === undefined) {\n        flow.set(\"dvcc\", 3);\n    }\n\n    return [\n        { payload: \"-50\" },\n        { payload: \"3\" },\n        { payload: \"Manual Stop Activated PowerUP Session Rest, Ready For Next PowerUP Event\" },\n        { reset: true },\n        { payload: \"Manual Stop Activated. Resetting values.\" },\n    ];\n} \n",
         "outputs": 4,
         "timeout": 0,
         "noerr": 0,
@@ -400,10 +400,12 @@
         "y": 420,
         "wires": [
             [
-                "78210df331ed57f2"
+                "78210df331ed57f2",
+                "5dcc1b5dfdabb6b2"
             ],
             [
-                "15f09bee0f07c92d"
+                "15f09bee0f07c92d",
+                "5dcc1b5dfdabb6b2"
             ],
             [
                 "ea007b3516ca10eb"
@@ -558,6 +560,22 @@
         "html": false,
         "x": 860,
         "y": 220,
+        "wires": []
+    },
+    {
+        "id": "5dcc1b5dfdabb6b2",
+        "type": "debug",
+        "z": "33e03f470b0de147",
+        "name": "debug 6",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 700,
+        "y": 480,
         "wires": []
     }
 ]
