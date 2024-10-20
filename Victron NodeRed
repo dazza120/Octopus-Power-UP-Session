@@ -1,5 +1,13 @@
 [
     {
+        "id": "33e03f470b0de147",
+        "type": "tab",
+        "label": "Octopus Power UP Session",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
         "id": "a826ca07a7e68bc1",
         "type": "change",
         "z": "33e03f470b0de147",
@@ -22,7 +30,7 @@
         "y": 40,
         "wires": [
             [
-                "792d040f649f0349"
+                "0f4326d20f1c6e18"
             ]
         ]
     },
@@ -116,7 +124,7 @@
         "once": false,
         "onceDelay": "",
         "topic": "",
-        "payload": "-50",
+        "payload": "-60",
         "payloadType": "num",
         "x": 150,
         "y": 400,
@@ -166,7 +174,7 @@
         "once": false,
         "onceDelay": "",
         "topic": "",
-        "payload": "9000",
+        "payload": "10000",
         "payloadType": "num",
         "x": 120,
         "y": 320,
@@ -231,7 +239,7 @@
         "type": "function",
         "z": "33e03f470b0de147",
         "name": "Power UP Discharge",
-        "func": "// Get current values\nvar soc = flow.get(\"soc\");\nvar currentGridsetpoint = flow.get(\"setpoint\");\nvar currentDVCC = flow.get(\"dvcc\");\nvar manualStart = flow.get(\"manualStart\");\nvar currentTime = new Date().getHours() * 60 + new Date().getMinutes();\n\nif (manualStart) {\n    if (currentTime === 12 * 60) {\n        if (currentGridsetpoint !== -50) {\n            flow.set(\"setpoint\", -7000);\n            return [ { payload: -7000 }, { payload: -1 } ];\n        }\n        return [ { payload: -7000 }, { payload: -1 } ];\n    }\n    if (currentTime === 12 * 60 + 59) {\n        if (currentGridsetpoint !== -7000) {\n            flow.set(\"setpoint\", -50);\n            return [ { payload: -50 }, { payload: -1 } ];\n        }\n        return [ { payload: -50 }, { payload: -1 } ];\n    }\n    if (soc > 68) {\n        if (currentGridsetpoint !== -50) {\n            flow.set(\"setpoint\", -7000);\n            return [ { payload: -7000 }, { payload: -1 } ];\n        }\n        return [ { payload: -7000 }, { payload: -1 } ];\n    } else if (soc <= 65) {\n        if (currentGridsetpoint !== -7000) {\n            flow.set(\"setpoint\", -50);\n            return [ { payload: -50 }, { payload: -1 } ];\n        }\n        return [ { payload: -50 }, { payload: -1 } ];\n    }\n}\nreturn null;\n",
+        "func": "var soc = msg.payload; \nvar manualStart = flow.get(\"manualStart\") || false; \nvar monitoring = flow.get(\"monitoring\") || false; \n\n// Update the latest SOC value\nflow.set(\"latestSoc\", soc);\n\nif (manualStart) {\n    if (!monitoring) {\n        // Start monitoring\n        flow.set(\"monitoring\", true);\n        \n        // Check every minute\n        setInterval(() => {\n            var currentTime = new Date(); \n            var currentHour = currentTime.getHours(); \n            var currentMinute = currentTime.getMinutes(); \n\n            // Check if we're in the specified time window\n            if (currentHour === 12 && currentMinute < 59) {\n                var latestSoc = flow.get(\"latestSoc\");\n                \n                // Discharge logic\n                if (latestSoc > 66) {\n                    node.send({ payload: -7000 }); \n                }\n                // Charge logic if SOC is 65 or below\n                else if (latestSoc <= 65) {\n                    node.send({ payload: -60 }); \n                }\n            } else {\n                // Stop monitoring after 12:58 PM\n                flow.set(\"monitoring\", false);\n                clearInterval(this);\n            }\n        }, 60000); // Check every minute\n    }\n}\n\nreturn null;\n",
         "outputs": 2,
         "timeout": 0,
         "noerr": 0,
@@ -255,7 +263,7 @@
         "type": "function",
         "z": "33e03f470b0de147",
         "name": "Power UP Charge",
-        "func": "// Get current values\nvar soc = flow.get(\"soc\");\nvar currentGridsetpoint = flow.get(\"setpoint\");\nvar currentDVCC = flow.get(\"dvcc\");\nvar manualStart = flow.get(\"manualStart\");\nvar currentTime = new Date().getHours() * 60 + new Date().getMinutes();\n\nif (manualStart) {\n    if (currentTime === 13 * 60) {\n        if (currentGridsetpoint !== -50) {\n            flow.set(\"setpoint\", 9000);\n            return [ { payload: 9000 }, { payload: -1 } ];\n        }\n        return [ { payload: 9000 }, { payload: -1 } ];\n    }\n    if (currentTime === 13 * 60 + 58) {\n        if (currentGridsetpoint !== 9000) {\n            flow.set(\"setpoint\", -50);\n            return [ { payload: -50 }, { payload: -1 } ];\n        }\n        return [ { payload: -50 }, { payload: -1 } ];\n    }\n    if (soc > 0) {\n        if (currentGridsetpoint !== -50) {\n            flow.set(\"setpoint\", 9000);\n            return [ { payload: 9000 }, { payload: -1 } ];\n        }\n        return [ { payload: 9000 }, { payload: -1 } ];\n    } else if (soc <= 65) {\n        if (currentGridsetpoint !== 9000) {\n            flow.set(\"setpoint\", -50);\n            return [ { payload: -50 }, { payload: -1 } ];\n        }\n        return [ { payload: -50 }, { payload: -1 } ];\n    }\n}\nreturn null;\n",
+        "func": "// Get current values\nvar soc = flow.get(\"soc\");\nvar currentGridsetpoint = flow.get(\"setpoint\");\nvar currentDVCC = flow.get(\"dvcc\");\nvar manualStart = flow.get(\"manualStart\");\nvar currentTime = new Date().getHours() * 60 + new Date().getMinutes();\n\nif (manualStart) {\n    if (currentTime === 13 * 60) {\n        if (currentGridsetpoint !== -60) {\n            flow.set(\"setpoint\", 10000);\n            return [ { payload: 10000 }, { payload: -1 } ];\n        }\n        return [ { payload: 10000 }, { payload: -1 } ];\n    }\n    if (currentTime === 13 * 60 + 58) {\n        if (currentGridsetpoint !== 10000) {\n            flow.set(\"setpoint\", -60);\n            return [ { payload: -60 }, { payload: -1 } ];\n        }\n        return [ { payload: -60 }, { payload: -1 } ];\n    }\n    if (soc > 0) {\n        if (currentGridsetpoint !== -60) {\n            flow.set(\"setpoint\", 10000);\n            return [ { payload: 10000 }, { payload: -1 } ];\n        }\n        return [ { payload: 10000 }, { payload: -1 } ];\n    }\n}\nreturn null;\n",
         "outputs": 2,
         "timeout": 0,
         "noerr": 0,
@@ -293,8 +301,8 @@
         "initial": "",
         "name": "",
         "onlyChanges": false,
-        "x": 780,
-        "y": 300,
+        "x": 860,
+        "y": 160,
         "wires": []
     },
     {
@@ -315,8 +323,8 @@
         },
         "name": "",
         "onlyChanges": false,
-        "x": 850,
-        "y": 360,
+        "x": 930,
+        "y": 220,
         "wires": []
     },
     {
@@ -326,6 +334,11 @@
         "name": "Set Manual Start",
         "func": "flow.set(\"manualStart\", true);\nflow.set(\"manualStop\", false);\nreturn { payload: \"Manual start activated\" };",
         "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
         "x": 390,
         "y": 140,
         "wires": [
@@ -338,28 +351,28 @@
         "id": "792d040f649f0349",
         "type": "function",
         "z": "33e03f470b0de147",
+        "d": true,
         "name": "SOC Monitoring",
-        "func": "var soc = msg.payload; \nvar manualStart = flow.get(\"manualStart\") || false; \nvar currentTime = new Date(); \nvar currentHour = currentTime.getHours(); \nvar currentMinute = currentTime.getMinutes(); \n\nif (manualStart) { \n    if (currentHour === 12) { \n        if (soc <= 65) { \n            node.send({ payload: -50 }); \n        } \n    } \n} \n\nreturn null;\n",
+        "func": "var soc = msg.payload; \nvar manualStart = flow.get(\"manualStart\") || false; \nvar currentTime = new Date(); \nvar currentHour = currentTime.getHours(); \nvar currentMinute = currentTime.getMinutes(); \n\nif (manualStart) { \n    if (currentHour === 12) { \n        if (soc <= 65) { \n            node.send({ payload: -60 }); \n        } \n    } \n} \n\nreturn null;\n",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 580,
-        "y": 20,
+        "x": 600,
+        "y": 580,
         "wires": [
-            [
-                "59a48d3b2c477c60"
-            ]
-        ]
+            []
+        ],
+        "info": "if (currentHour === 12) Change this time to co incide with the discharge time so that this can be triggered by the SOC when discharge time is running so if it gets that set point"
     },
     {
         "id": "48b56ccd39c59c22",
         "type": "function",
         "z": "33e03f470b0de147",
         "name": "Power UP Session Complete",
-        "func": "\nif (flow.get(\"manualStart\") !== true) {\n    return null; \n}\n\n\nvar currentGridsetpoint = flow.get(\"setpoint\");\nvar currentDVCC = flow.get(\"dvcc\");\n\nif (currentGridsetpoint === undefined) {\n    flow.set(\"setpoint\", -50);\n}\nif (currentDVCC === undefined) {\n    flow.set(\"dvcc\", 3);\n}\n\nflow.set(\"manualStart\", false);\nflow.set(\"manualStop\", true);\n\nreturn [\n    { payload: \"-50\" },\n    { payload: \"3\" },\n    { payload: \"PowerUP Session Finished Ready For Next PowerUP Event :)\" },\n    { reset: true },\n    { payload: \"Manual stop activated\" }\n];\n",
+        "func": "\nif (flow.get(\"manualStart\") !== true) {\n    return null; \n}\n\n\nvar currentGridsetpoint = flow.get(\"setpoint\");\nvar currentDVCC = flow.get(\"dvcc\");\n\nif (currentGridsetpoint === undefined) {\n    flow.set(\"setpoint\", -60);\n}\nif (currentDVCC === undefined) {\n    flow.set(\"dvcc\", 3);\n}\n\nflow.set(\"manualStart\", false);\nflow.set(\"manualStop\", true);\n\nreturn [\n    { payload: \"-60\" },\n    { payload: \"3\" },\n    { payload: \"PowerUP Session Finished Ready For Next PowerUP Event :)\" },\n    { reset: true },\n    { payload: \"Manual stop activated\" }\n];\n",
         "outputs": 4,
         "timeout": 0,
         "noerr": 0,
@@ -389,7 +402,7 @@
         "type": "function",
         "z": "33e03f470b0de147",
         "name": "Rest For Next Power UP Session",
-        "func": "if (flow.get(\"manualStart\") === true) {\n    flow.set(\"manualStart\", false);\n    \n    if (flow.get(\"setpoint\") === undefined) {\n        flow.set(\"setpoint\", -50);\n    }\n    if (flow.get(\"dvcc\") === undefined) {\n        flow.set(\"dvcc\", 3);\n    }\n\n    return [\n        { payload: \"-50\" },\n        { payload: \"3\" },\n        { payload: \"Manual Stop Activated PowerUP Session Rest, Ready For Next PowerUP Event\" },\n        { reset: true },\n        { payload: \"Manual Stop Activated. Resetting values.\" },\n    ];\n} \n",
+        "func": "if (flow.get(\"manualStart\") === true) {\n    flow.set(\"manualStart\", false);\n    \n    if (flow.get(\"setpoint\") === undefined) {\n        flow.set(\"setpoint\", -60);\n    }\n    if (flow.get(\"dvcc\") === undefined) {\n        flow.set(\"dvcc\", 3);\n    }\n\n    return [\n        { payload: \"-60\" },\n        { payload: \"3\" },\n        { payload: \"Manual Stop Activated PowerUP Session Rest, Ready For Next PowerUP Event\" },\n        { reset: true },\n        { payload: \"Manual Stop Activated. Resetting values.\" },\n    ];\n} \n",
         "outputs": 4,
         "timeout": 0,
         "noerr": 0,
@@ -410,7 +423,8 @@
             ],
             [
                 "8c34618ef1509005",
-                "b1bcab04ffa187c9"
+                "b1bcab04ffa187c9",
+                "34c8aa9f2bdbfd7e"
             ]
         ]
     },
@@ -426,8 +440,8 @@
         "url": "",
         "url_title": "",
         "html": false,
-        "x": 790,
-        "y": 140,
+        "x": 810,
+        "y": 280,
         "wires": []
     },
     {
@@ -442,8 +456,8 @@
         "url": "",
         "url_title": "",
         "html": false,
-        "x": 780,
-        "y": 180,
+        "x": 800,
+        "y": 320,
         "wires": []
     },
     {
@@ -458,8 +472,8 @@
         "url": "",
         "url_title": "",
         "html": false,
-        "x": 850,
-        "y": 260,
+        "x": 870,
+        "y": 400,
         "wires": []
     },
     {
@@ -474,8 +488,8 @@
         "url": "",
         "url_title": "",
         "html": false,
-        "x": 940,
-        "y": 60,
+        "x": 1100,
+        "y": 20,
         "wires": []
     },
     {
@@ -490,8 +504,8 @@
         "url": "",
         "url_title": "",
         "html": false,
-        "x": 880,
-        "y": 100,
+        "x": 1040,
+        "y": 60,
         "wires": []
     },
     {
@@ -511,8 +525,8 @@
         "drop": false,
         "allowrate": false,
         "outputs": 1,
-        "x": 590,
-        "y": 60,
+        "x": 790,
+        "y": 100,
         "wires": [
             [
                 "606125b8ea556d0a"
@@ -536,8 +550,8 @@
         "drop": true,
         "allowrate": false,
         "outputs": 1,
-        "x": 600,
-        "y": 100,
+        "x": 620,
+        "y": 80,
         "wires": [
             [
                 "b1bcab04ffa187c9"
@@ -556,8 +570,53 @@
         "url": "",
         "url_title": "",
         "html": false,
-        "x": 860,
-        "y": 220,
+        "x": 880,
+        "y": 360,
         "wires": []
+    },
+    {
+        "id": "34c8aa9f2bdbfd7e",
+        "type": "delay",
+        "z": "33e03f470b0de147",
+        "name": "One Message",
+        "pauseType": "rate",
+        "timeout": "5",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "day",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": true,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 760,
+        "y": 40,
+        "wires": [
+            [
+                "59a48d3b2c477c60"
+            ]
+        ]
+    },
+    {
+        "id": "0f4326d20f1c6e18",
+        "type": "function",
+        "z": "33e03f470b0de147",
+        "name": "SOC Monitor",
+        "func": "var soc = msg.payload; \nvar manualStart = flow.get(\"manualStart\") || false; \nvar monitoring = flow.get(\"monitoring\") || false; \n\nif (manualStart && !monitoring) {\n    // Start monitoring\n    flow.set(\"monitoring\", true);\n\n    // Check every minute\n    var interval = setInterval(() => {\n        var currentTime = new Date(); \n        var currentHour = currentTime.getHours(); \n        var currentMinute = currentTime.getMinutes(); \n\n        // Check if we're still in the specified time window\n        if (currentHour === 12 && currentMinute < 59) {\n            // Use the latest SOC value from the incoming message\n            if (flow.get(\"latestSoc\") <= 65) {\n                node.send({ payload: -60 }); \n            }\n        } else {\n            // Stop monitoring after 12:58 PM\n            flow.set(\"monitoring\", false);\n            clearInterval(interval);\n        }\n    }, 60000); // Check every minute\n}\n\n// Update the latest SOC value\nflow.set(\"latestSoc\", soc);\n\nreturn null;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 570,
+        "y": 20,
+        "wires": [
+            [
+                "34c8aa9f2bdbfd7e"
+            ]
+        ]
     }
 ]
